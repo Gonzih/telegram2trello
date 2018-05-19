@@ -1,0 +1,16 @@
+image: golang:1.10-alpine
+
+pipelines:
+  default:
+    - step:
+        script:
+          - PACKAGE_PATH="${GOPATH}/src/bitbucket.org/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}"
+          - mkdir -pv "${PACKAGE_PATH}"
+          - tar -cO --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
+          - cd "${PACKAGE_PATH}"
+          - apk update
+          - apk add git
+          - go get -u github.com/golang/dep/cmd/dep
+          - dep ensure
+          - go build -v
+          - go test -v
